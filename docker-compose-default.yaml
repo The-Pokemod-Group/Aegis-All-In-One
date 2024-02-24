@@ -1,0 +1,442 @@
+version: "3.8"
+services:
+  # This docker-compose file is divided into sections. The basic necessary
+  # services are included and uncommented first, followed by optional and more
+  # advanced services that the user can choose to enable as he progresses
+
+  # Basic Section
+
+  # Main database to handle everything
+  # Container default port is 3306 if you need to expose it (you shouldn't)
+  # environment section is only needed on first ever start. After that it can
+  # be safely removed as the database already exists
+
+  database:
+    image: mariadb:latest
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --binlog-expire-logs-seconds=86400
+    container_name: database
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: golbat
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./mysql_data/mariadb.cnf:/etc/mysql/mariadb.cnf
+      - ./mysql_data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+
+  # PhpMyAdmin to access all our databases through a web interface
+  # Default container port is 80. By default we expose it to 6000
+  # however, if you use a reverse proxy and want external access, you
+  # can remove the ports section give access to the internet through
+  # the reverse proxy
+
+  pma:
+    image: phpmyadmin:latest
+    container_name: pma
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      PMA_HOST: database
+      UPLOAD_LIMIT: 600M
+    ports:
+      - 6000:80
+
+  # Reactmap - Map fronted
+  # Default container port 8080. Once again, we expose it to 6001 but with a
+  # reverse proxy you can remove the ports section and give access to the
+  # internet through the reverse proxy (pointing directly to the container port)
+
+  reactmap:
+    image: ghcr.io/watwowmap/reactmap:latest
+    container_name: reactmap
+    command: sh -c "yarn start"
+    restart: unless-stopped
+    depends_on:
+      - database
+    volumes:
+      - ./reactmap/local.json:/home/node/server/src/configs/local.json
+      - ./reactmap/env:/home/node/.env
+    ports:
+      - 6001:8080
+
+  # Koji Geofence and Map Management service
+  # Default container port 8080. As above services, remove ports if you will
+  # use a reverse proxy. Exposed port is 6002
+
+  koji:
+    image: ghcr.io/turtiesocks/koji:main
+    container_name: koji
+    command: "koji"
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      SCANNER_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/golbat"
+      KOJI_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/koji"
+      CONTROLLER_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/dragonite"
+      KOJI_SECRET: ${KOJI_SECRET}
+    ports:
+      - 6002:8080
+
+  # Dragonite Scanner
+  # Default container port is 7272 which is not exposed. It is only used
+  # internally by other containers
+
+  dragonite:
+    image: ghcr.io/unownhash/dragonite-public:latest
+    container_name: dragonite
+    restart: unless-stopped
+    depends_on:
+      - golbat
+    volumes:
+      - type: bind
+        source: ./unown/dragonite_config.toml
+        target: /dragonite/config.toml
+      - type: bind
+        source: ./unown/logs
+        target: /dragonite/logs
+
+  # Dragonite Admin UX
+  # Default container port is 7273 which can be exposed to 6003 (or not if
+  # you use a reverse proxy).
+
+  admin:
+    image: ghcr.io/unownhash/dragonite-public-admin:latest
+    container_name: admin
+    restart: unless-stopped
+    depends_on:
+      - dragonite
+    environment:
+      ADMIN_GENERAL_HOST: 0.0.0.0
+      ADMIN_GENERAL_PORT: 7273
+      ADMIN_GENERAL_USERNAME: admin
+      ADMIN_GENERAL_PASSWORD: ${DRAGONITE_PASSWORD}
+      ADMIN_DRAGONITE_API_ENDPOINT: http://dragonite:7272
+      ADMIN_DRAGONITE_API_SECRET: ${DRAGONITE_API_SECRET}
+      ADMIN_GOLBAT_API_ENDPOINT: http://golbat:9001
+      ADMIN_GOLBAT_API_SECRET: ${GOLBAT_API_SECRET}
+    ports:
+      - 6003:7273
+
+  # Golbat Data Parser
+  # Default ports are 9001 and 50001. There's no need to expose them
+  # as they are only used internally by other containers
+
+  golbat:
+    image: ghcr.io/unownhash/golbat:main
+    container_name: golbat
+    restart: unless-stopped
+    depends_on:
+      - database
+    volumes:
+      - type: bind
+        source: ./unown/golbat_config.toml
+        target: /golbat/config.toml
+      - type: bind
+        source: ./unown/golbat_cache
+        target: /golbat/cache
+      - type: bind
+        source: ./unown/logs
+        target: /golbat/logs
+
+  # Rotom Device Manager
+  # Default container ports 7070,7071,7072. We will only expose
+  # 7070 so aegis devices can connect to it
+
+  rotom:
+    image: ghcr.io/unownhash/rotom:main
+    container_name: rotom
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./unown/rotom_config.json
+        target: /rotom/config/local.json
+      - type: bind
+        source: ./unown/logs
+        target: /rotom/logs
+      - type: bind
+        source: ./unown/rotom_jobs
+        target: /rotom/jobs
+    ports:
+      - 7070:7070
+
+  # # Reverse Proxy to manage everything related to domains
+  # # needs 80 and 443 exposed in production to handle all incoming traffic
+  # # can use 8443 or any other cloudflare approved port for testing
+
+  # swag:
+  #   image: lscr.io/linuxserver/swag
+  #   container_name: swag
+  #   restart: unless-stopped
+  #   cap_add:
+  #     - NET_ADMIN
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/London
+  #     - URL=yourdomain.com
+  #     - SUBDOMAINS=www,map,monitorix,grafana,dragonite,rotom,koji,pma,portainer
+  #     - VALIDATION=dns
+  #     - CERTPROVIDER=zerossl
+  #     - DNSPLUGIN=cloudflare
+  #     - EMAIL=${ADMIN_EMAIL}
+  #     - ONLY_SUBDOMAINS=false
+  #     - STAGING=false
+  #     - DOCKER_MODS=linuxserver/mods:swag-dashboard|linuxserver/mods:swag-cloudflare-real-ip|linuxserver/mods:swag-auto-reload
+  #   volumes:
+  #     - type: bind
+  #       source: ./swag
+  #       target: /config
+  #     - type: bind
+  #       source: ./swag/fail2ban/fail2ban.sqlite3
+  #       target: /dashboard/fail2ban.sqlite3:ro
+  #   ports:
+  #     - 80:80 # Mandatory for external redirect to 443
+  #     - 443:443 # Public entrypoint
+
+  # # DDClient to automatically update our dynamic IP on Cloudflare
+
+  # ddclient:
+  #   image: lscr.io/linuxserver/ddclient:latest
+  #   container_name: ddclient
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/London
+  #   volumes:
+  #     - ./ddclient:/config
+  #   restart: unless-stopped
+
+  # # Authelia Service to provide a more secure authentication method
+  # # than just basic auth
+
+  # authelia:
+  #   image: ghcr.io/authelia/authelia:latest
+  #   container_name: authelia
+  #   user: "1000:1000"
+  #   environment:
+  #     - TZ=Europe/Lisbon
+  #   volumes:
+  #     - type: bind
+  #       source: ./authelia
+  #       target: /config
+  #   restart: unless-stopped
+
+  # # VictoriaMetrics Agent to scrape data from all services
+  # # default container port is 8429
+
+  # vmagent:
+  #   image: victoriametrics/vmagent
+  #   container_name: vmagent
+  #   user: "1000:1000"
+  #   restart: unless-stopped
+  #   working_dir: /vmagentdata
+  #   depends_on:
+  #     - victoriametrics
+  #   volumes:
+  #     - ./vmagent/data:/vmagentdata
+  #     - ./vmagent/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   command:
+  #     - "--promscrape.config=/etc/prometheus/prometheus.yml"
+  #     - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
+
+  # # VictoriaMetrics package
+  # # default port is 8428
+
+  # victoriametrics:
+  #   image: victoriametrics/victoria-metrics
+  #   container_name: victoriametrics
+  #   user: "1000:1000"
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - dragonite
+  #     - rotom
+  #     - golbat
+  #   volumes:
+  #     - ./victoriametrics/data:/storage
+  #   command:
+  #     - "--storageDataPath=/storage"
+  #     - "--httpListenAddr=:8428"
+  #     - "--maxLabelsPerTimeseries=30"
+
+  # # Grafana Package for beautiful stats
+  # # Default port of the container is 3000
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   user: "1000:1000"
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - victoriametrics
+  #   volumes:
+  #     - ./grafana:/var/lib/grafana
+  #     - /etc/localtime:/etc/localtime:ro
+  #   environment:
+  #     GF_RENDERING_SERVER_URL: http://grafana-renderer:8081/render
+  #     GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+  #     GF_LOG_FILTERS: rendering:debug
+
+  # grafana-renderer:
+  #   image: grafana/grafana-image-renderer:latest
+  #   container_name: grafana-renderer
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - grafana
+
+  # # Poracle Notification System
+  # # Default container port 3030
+
+  # poracle:
+  #   image: ghcr.io/kartuludus/poraclejs:develop
+  #   container_name: poracle
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - database
+  #   environment:
+  #     PORACLE_SERVER_HOST: 0.0.0.0
+  #     PORACLE_SERVER_PORT: 3030
+  #     PORACLE_DB_TYPE: mysql
+  #     PORACLE_DB_HOST: database
+  #     PORACLE_DB_DATABASE: poracle
+  #     PORACLE_DB_USER: dbuser
+  #     PORACLE_DB_PASSWORD: ${MYSQL_PASSWORD}
+  #   volumes:
+  #     - ./poraclejs/config/:/usr/src/app/config/
+  #     - ./poraclejs/logs/:/usr/src/app/logs/
+  #     - ./poraclejs/cache/:/usr/src/app/.cache/
+
+  # # Tileserver to be used with poracle to generate map tiles of the pokemon/raid posts
+  # # Default container port 9999
+
+  # tileserver:
+  #   image: maptiler/tileserver-gl:latest
+  #   command: -p 9999
+  #   container_name: tileserver
+  #   user: "1000:1000"
+  #   restart: unless-stopped
+  #   tty: true
+  #   healthcheck:
+  #     disable: true
+  #   volumes:
+  #     - ./tileserver/data:/data
+
+  # # Tileserver cache
+  # # Default container port 9000
+
+  # tcache:
+  #   image: 0815flo/swifttileservercache:latest
+  #   container_name: tcache
+  #   user: "1000:1000"
+  #   restart: unless-stopped
+  #   tty: true
+  #   volumes:
+  #     - ./tileserver/cache:/SwiftTileserverCache/Cache
+  #     - ./tileserver/templates:/SwiftTileserverCache/Templates
+  #     - ./tileserver/markers:/SwiftTileserverCache/Markers
+  #     - ./tileserver/data:/SwiftTileserverCache/TileServer
+  #   environment:
+  #     TILE_SERVER_URL: http://tileserver:9999
+  #     TILE_CACHE_MAX_AGE_MINUTES: 1440 # 1 Day
+  #     TILE_CACHE_DELAY_SECONDS: 3600 # 1 Hour
+  #     STATIC_CACHE_MAX_AGE_MINUTES: 60 # 1440 # 1 Day
+  #     STATIC_CACHE_DELAY_SECONDS: 3600 # 1 Hour
+  #     STATIC_MUTLI_CACHE_MAX_AGE_MINUTES: 60 # 1 Hour
+  #     STATIC_MULTI_CACHE_DELAY_SECONDS: 900 # 15 Minutes
+  #     MARKER_CACHE_MAX_AGE_MINUTES: 1440 # 1 Day
+  #     MARKER_CACHE_DELAY_SECONDS: 3600 # 1 Hour
+  #     TEMPLATES_CACHE_DELAY_SECONDS: 60 # 1 Minute
+  #     MAX_BODY_SIZE: 2mb
+  #     PREVIEW_LATIDUDE: 61.45103083113621
+  #     PREVIEW_LONGITUDE: 23.856751630579232
+  #     ADMIN_USERNAME: admin
+  #     ADMIN_PASSWORD: ${TILESERVER_PASSWORD}
+
+  # rotomonitor:
+  #   container_name: rotomonitor
+  #   depends_on:
+  #     - rotom
+  #   build: ./rotomonitor
+  #   volumes:
+  #     - type: bind
+  #       source: ./rotomonitor/deviceDB.sqlite
+  #       target: /usr/src/app/deviceDB.sqlite
+  #     - type: bind
+  #       source: ./rotomonitor/RotomonitorConfig.json
+  #       target: /usr/src/app/RotomonitorConfig.json
+  #   restart: unless-stopped
+
+  # # Psyduck stack
+
+  # psyduck-redis:
+  #   image: redis:latest
+  #   restart: unless-stopped
+  #   container_name: psyduck-redis
+  #   command: /bin/sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
+
+  # psyduck-celery:
+  #   container_name: psyduck-celery
+  #   depends_on:
+  #     - database
+  #     - psyduck-redis
+  #   build:
+  #     context: ./psyduck
+  #     dockerfile: celery.Dockerfile
+  #   restart: unless-stopped
+
+  # psyduck-webhook:
+  #   container_name: psyduck-webhook
+  #   depends_on:
+  #     - psyduck-redis
+  #   build:
+  #     context: ./psyduck
+  #     dockerfile: webhook.Dockerfile
+  #   restart: unless-stopped
+
+  # API to provide parsed data
+  # Default container port 5001
+
+  # psyduck-api:
+  #   container_name: psyduck-api
+  #   depends_on:
+  #     - psyduck-redis
+  #   build:
+  #     context: ./psyduck
+  #     dockerfile: api.Dockerfile
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5001:5001
+
+  # # Discord Bot to provide statistics
+
+  # chatot:
+  #   container_name: chatot
+  #   depends_on:
+  #     - psyduck-api
+  #   build:
+  #     context: ./chatot
+  #     dockerfile: Dockerfile
+
+  #   restart: unless-stopped
+
+  # Portainer to monitor and interact with docker
+  # Original port is 9000
+
+  # portainer:
+  #   image: portainer/portainer-ce
+  #   restart: unless-stopped
+  #   container_name: portainer
+  #   command: -H unix:///var/run/docker.sock
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./portainer:/data
+
+# Common Network for everything
+
+networks:
+  mapping_network:
+    driver: bridge
