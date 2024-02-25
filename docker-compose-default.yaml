@@ -23,6 +23,7 @@ services:
       MYSQL_USER: dbuser
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
+      - ./init:/docker-entrypoint-initdb.d
       - ./mysql_data/mariadb.cnf:/etc/mysql/mariadb.cnf
       - ./mysql_data:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
