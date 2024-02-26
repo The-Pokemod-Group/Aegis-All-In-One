@@ -1,0 +1,29 @@
+{
+  "deviceListener": {
+    "port": 7070,
+    "secret": "SuperSecretAuthBearerForAegisDevices"
+  },
+  "controllerListener": {
+    "port": 7071,
+    "secret": ""
+  },
+  "client": {
+    "port": 7072,
+    "host": "0.0.0.0"
+  },
+  "logging": {
+    "save": false,
+    "maxSize": 100,
+    "maxAge": 14,
+    "debug": false,
+    "consoleStatus": false
+  },
+  "monitor": {
+    "enabled": false,
+    "reboot": false,
+    "minMemory": 30000,
+    "maxMemStartMultiple": 2,
+    "maxMemStartMultipleOverwrite": {},
+    "deviceCooldown": 12
+  }
+}

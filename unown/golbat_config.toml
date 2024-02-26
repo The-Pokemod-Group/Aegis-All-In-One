@@ -1,0 +1,59 @@
+port = 9001             # Listening port for golbat
+grpc_port = 50001       # Listening port for grpc
+raw_bearer = "SuperSecureGolbatRawSecret"     # Raw bearer (password) required
+api_secret = "SuperSecureGolbatApiSecret"     # Golbat secret required on api calls (blank for none)
+
+pokemon_memory_only = false  # Use in-memory storage for pokemon only
+
+[koji]
+url = "http://koji:8080/api/v1/geofence/feature-collection/Mapping"
+bearer_token = "SuperSecureKojiSecret"
+
+[cleanup]
+pokemon = true          # Keep pokemon table is kept nice and short
+incidents = true        # Remove incidents after expiry
+quests = true           # Remove quests after expiry
+stats = true            # Enable/Disable stats history
+stats_days = 365        # Remove entries from ["pokemon_stats", "pokemon_shiny_stats", "pokemon_iv_stats", "pokemon_hundo_stats", "pokemon_nundo_stats" after x days
+device_hours = 24       # Remove devices from in memory after not seen for x hours
+
+[logging]
+debug = false
+save_logs = false
+max_size = 50           # Size in MB
+max_backups = 10        # Amount of files to keep
+max_age = 30            # Day(s) to keep files
+compress = true         # Compress to gz archive
+
+[database]
+user = "dbuser"
+password = "SuperSecuredbuserPassword"
+address = "database:3306"
+db = "golbat"
+
+
+[pvp]
+enabled = true
+include_hundos_under_cap = false
+
+# you can enable prometheus by uncommenting this section
+[prometheus]
+enabled = true
+
+# You can specify more than one webhook destination by including the [[webhooks]] section
+# multiple times.  The hook types can optionally be filtered by using the types array
+
+#[[webhooks]]
+#url = "http://poracle:3030"
+# types if specified can be...
+# types = ["pokemon", "pokemon_iv", "pokemon_no_iv", "gym", "invasion", "quest", "pokestop", "raid", "weather", "fort_update"]
+# "pokemon" includes both with ivs and without. "pokemon_iv" will only be encountered pokemon. "pokemon_no_iv" may be nearby pokemon that have not been encountered (yet).
+
+#[[webhooks]]
+#url = "http://psyduck-webhook:5000/webhook"
+#types = ["pokemon"]
+
+#[[webhooks]]
+#url = "http://localhost:4202"
+#types = ["raid"]
+#areas = ["London/*", "*/Harrow", "Harrow"]

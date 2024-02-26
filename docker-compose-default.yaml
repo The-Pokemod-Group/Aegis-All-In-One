@@ -28,26 +28,8 @@ services:
       - ./mysql_data:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
 
-  # PhpMyAdmin to access all our databases through a web interface
-  # Default container port is 80. By default we expose it to 6000
-  # however, if you use a reverse proxy and want external access, you
-  # can remove the ports section give access to the internet through
-  # the reverse proxy
-
-  pma:
-    image: phpmyadmin:latest
-    container_name: pma
-    restart: unless-stopped
-    depends_on:
-      - database
-    environment:
-      PMA_HOST: database
-      UPLOAD_LIMIT: 600M
-    ports:
-      - 6000:80
-
   # Reactmap - Map fronted
-  # Default container port 8080. Once again, we expose it to 6001 but with a
+  # Default container port 8080. We expose it through port 6000 but with a
   # reverse proxy you can remove the ports section and give access to the
   # internet through the reverse proxy (pointing directly to the container port)
 
@@ -62,11 +44,11 @@ services:
       - ./reactmap/local.json:/home/node/server/src/configs/local.json
       - ./reactmap/env:/home/node/.env
     ports:
-      - 6001:8080
+      - 6000:8080
 
   # Koji Geofence and Map Management service
   # Default container port 8080. As above services, remove ports if you will
-  # use a reverse proxy. Exposed port is 6002
+  # use a reverse proxy. Exposed port is 6001
 
   koji:
     image: ghcr.io/turtiesocks/koji:main
@@ -81,7 +63,7 @@ services:
       CONTROLLER_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/dragonite"
       KOJI_SECRET: ${KOJI_SECRET}
     ports:
-      - 6002:8080
+      - 6001:8080
 
   # Dragonite Scanner
   # Default container port is 7272 which is not exposed. It is only used
@@ -102,7 +84,7 @@ services:
         target: /dragonite/logs
 
   # Dragonite Admin UX
-  # Default container port is 7273 which can be exposed to 6003 (or not if
+  # Default container port is 7273 which can be exposed to 6002 (or not if
   # you use a reverse proxy).
 
   admin:
@@ -121,7 +103,7 @@ services:
       ADMIN_GOLBAT_API_ENDPOINT: http://golbat:9001
       ADMIN_GOLBAT_API_SECRET: ${GOLBAT_API_SECRET}
     ports:
-      - 6003:7273
+      - 6002:7273
 
   # Golbat Data Parser
   # Default ports are 9001 and 50001. There's no need to expose them
@@ -164,6 +146,24 @@ services:
         target: /rotom/jobs
     ports:
       - 7070:7070
+
+  # PhpMyAdmin to access all our databases through a web interface
+  # Default container port is 80. By default we expose it to 6003
+  # however, if you use a reverse proxy and want external access, you
+  # can remove the ports section give access to the internet through
+  # the reverse proxy
+
+  pma:
+    image: phpmyadmin:latest
+    container_name: pma
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      PMA_HOST: database
+      UPLOAD_LIMIT: 600M
+    ports:
+      - 6003:80
 
   # # Reverse Proxy to manage everything related to domains
   # # needs 80 and 443 exposed in production to handle all incoming traffic
