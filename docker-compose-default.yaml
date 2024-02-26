@@ -46,25 +46,6 @@ services:
     ports:
       - 6000:8080
 
-  # Koji Geofence and Map Management service
-  # Default container port 8080. As above services, remove ports if you will
-  # use a reverse proxy. Exposed port is 6001
-
-  koji:
-    image: ghcr.io/turtiesocks/koji:main
-    container_name: koji
-    command: "koji"
-    restart: unless-stopped
-    depends_on:
-      - database
-    environment:
-      SCANNER_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/golbat"
-      KOJI_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/koji"
-      CONTROLLER_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/dragonite"
-      KOJI_SECRET: ${KOJI_SECRET}
-    ports:
-      - 6001:8080
-
   # Dragonite Scanner
   # Default container port is 7272 which is not exposed. It is only used
   # internally by other containers
@@ -84,7 +65,7 @@ services:
         target: /dragonite/logs
 
   # Dragonite Admin UX
-  # Default container port is 7273 which can be exposed to 6002 (or not if
+  # Default container port is 7273 which can be exposed to 6001 (or not if
   # you use a reverse proxy).
 
   admin:
@@ -103,7 +84,7 @@ services:
       ADMIN_GOLBAT_API_ENDPOINT: http://golbat:9001
       ADMIN_GOLBAT_API_SECRET: ${GOLBAT_API_SECRET}
     ports:
-      - 6002:7273
+      - 6001:7273
 
   # Golbat Data Parser
   # Default ports are 9001 and 50001. There's no need to expose them
@@ -128,7 +109,7 @@ services:
 
   # Rotom Device Manager
   # Default container ports 7070,7071,7072. We will only expose
-  # 7070 so aegis devices can connect to it and 7072 for the web interface if
+  # 7070 so aegis devices can connect to it and 7072 (port 6002) for the web interface if
   # you want to access it directly. If you use a reverse proxy you can remove
   # the second port.
 
@@ -148,7 +129,26 @@ services:
         target: /rotom/jobs
     ports:
       - 7070:7070
-      - 6003:7072
+      - 6002:7072
+
+  # Koji Geofence and Map Management service
+  # Default container port 8080. As above services, remove ports if you will
+  # use a reverse proxy. Exposed port is 6003
+
+  koji:
+    image: ghcr.io/turtiesocks/koji:main
+    container_name: koji
+    command: "koji"
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      SCANNER_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/golbat"
+      KOJI_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/koji"
+      CONTROLLER_DB_URL: "mysql://dbuser:${MYSQL_PASSWORD}@database:3306/dragonite"
+      KOJI_SECRET: ${KOJI_SECRET}
+    ports:
+      - 6003:8080
 
   # PhpMyAdmin to access all our databases through a web interface
   # Default container port is 80. By default we expose it to 6004
