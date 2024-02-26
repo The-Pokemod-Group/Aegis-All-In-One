@@ -44,7 +44,15 @@ You should check each running container for errors after first start in the form
 sudo docker logs <name_of_container>
 ```
 
-It's normal that after the first start some errors appear as, for example, koji needs to have
+It's normal that after the first start some errors appear as, for example, Koji needs to have
 at least one project for dragonite/reactmap.
 
 ![Koji Sample Projects](https://i.ibb.co/YhdSWCq/koji-projects.png)
+
+Debugging is a big part of the process, so don't be afraid to ask for help in our Discord server (https://discord.gg/pokemod)
+
+# WARNING WARNING WARNING
+
+This is an insecure setup. If you run this on an internet exposed server, you can easily be hacked as many services don't have embedded auth. Some will leak personal information even while using the embedded auth so consider yourself **warned**.
+
+Ideally, you **should** use a reverse proxy and, at the minimum, place basic auth to your exposed services. If you run a reverse proxy like SWAG (https://docs.linuxserver.io/general/swag/) you should opt to run **Authelia** to assure further security and privacy all around.
