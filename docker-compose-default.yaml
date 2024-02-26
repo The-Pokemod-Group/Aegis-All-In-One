@@ -128,7 +128,9 @@ services:
 
   # Rotom Device Manager
   # Default container ports 7070,7071,7072. We will only expose
-  # 7070 so aegis devices can connect to it
+  # 7070 so aegis devices can connect to it and 7072 for the web interface if
+  # you want to access it directly. If you use a reverse proxy you can remove
+  # the second port.
 
   rotom:
     image: ghcr.io/unownhash/rotom:main
@@ -146,9 +148,10 @@ services:
         target: /rotom/jobs
     ports:
       - 7070:7070
+      - 6003:7072
 
   # PhpMyAdmin to access all our databases through a web interface
-  # Default container port is 80. By default we expose it to 6003
+  # Default container port is 80. By default we expose it to 6004
   # however, if you use a reverse proxy and want external access, you
   # can remove the ports section give access to the internet through
   # the reverse proxy
@@ -163,7 +166,7 @@ services:
       PMA_HOST: database
       UPLOAD_LIMIT: 600M
     ports:
-      - 6003:80
+      - 6004:80
 
   # # Reverse Proxy to manage everything related to domains
   # # needs 80 and 443 exposed in production to handle all incoming traffic
