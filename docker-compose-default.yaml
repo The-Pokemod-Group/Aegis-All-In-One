@@ -183,7 +183,7 @@ services:
   #     - PGID=1000
   #     - TZ=Europe/London
   #     - URL=yourdomain.com
-  #     - SUBDOMAINS=www,map,monitorix,grafana,dragonite,rotom,koji,pma,portainer
+  #     - SUBDOMAINS=www,map,grafana,dragonite,rotom,koji,pma
   #     - VALIDATION=dns
   #     - CERTPROVIDER=zerossl
   #     - DNSPLUGIN=cloudflare
