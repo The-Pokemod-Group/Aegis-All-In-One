@@ -71,7 +71,19 @@ Point your browser to the following addresses. replace localhost with your serve
 - http://localhost:6005 (PhpMyAdmin)
 - http://localhost:6006 (Grafana UX)
 
-### 6. What now?
+### 6. Working with Grafana
+
+Albeit not critical to normal operation, it's always nice and informative to have some kind of performance metrics of your setup. In order to get a glimpse of what you can get with it, you should import our custom example dashboard that's inside the grafana folder.
+
+1.  point your browser to http://localhost:6006
+2.  login with the default admin/admin credentials (for God sake, change them once you've logged in)
+3.  Add a new prometheus datasource and point it to `victoriametrics:8428`
+4.  Tap on Dashboards → Add New → Import and select `Dragonite-Emi-v5.json`
+5.  Tap save
+
+That's it. If you want more dashboards, you can find them at Unown#'s github.
+
+### 7. What now?
 
 Now comes the fun part. Start reading and learning how all of this works. We recommed you to head over to the unown# discord server for specific help regarding Dragonite, Golbat and Rotom (https://discord.gg/Vjze47qchG), for Reactmap and Koji check ou their server at https://discord.gg/EYYsKPVawn.
 
@@ -81,14 +93,9 @@ In general terms, you will need to:
 
 1. Add accounts to Dragonite
 2. Add at least one project with areas in Koji (check the image below for an example of a full running setup)
-3. Sync the project with dragonite
+3. Sync the project with Dragonite and Reactmap
 4. Add at least one Aegis Device (should be autodetected by Rotom once you configure the ATV and Aegis properly)
 5. Map away
-
-Additionally you can
-
-6. Check out unown# github and download the available Grafana Dashboards for easy import into your grafana instance. You can use
-   the sample dashboard we've included inside the grafana folder too!
 
 _Koji Projects:_
 
