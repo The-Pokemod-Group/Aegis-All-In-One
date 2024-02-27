@@ -87,7 +87,8 @@ In general terms, you will need to:
 
 Additionally you can
 
-6. Check out unown# github and download the available Grafana Dashboards for easy import into your grafana instance
+6. Check out unown# github and download the available Grafana Dashboards for easy import into your grafana instance. You can use
+   the sample dashboard we've included inside the grafana folder too!
 
 _Koji Projects:_
 
