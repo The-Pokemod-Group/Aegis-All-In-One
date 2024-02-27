@@ -207,6 +207,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
+    user: "$UID:$GID"
     depends_on:
       - victoriametrics
     volumes:
