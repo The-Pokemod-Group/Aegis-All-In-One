@@ -69,6 +69,7 @@ Point your browser to the following addresses. replace localhost with your serve
 - http://localhost:6003 (Rotom UX)
 - http://localhost:6004 (Koji UX)
 - http://localhost:6005 (PhpMyAdmin)
+- http://localhost:6006 (Grafana UX)
 
 ### 6. What now?
 
@@ -84,21 +85,29 @@ In general terms, you will need to:
 4. Add at least one Aegis Device (should be autodetected by Rotom once you configure the ATV and Aegis properly)
 5. Map away
 
-Koji Projects Example:
+Additionally you can
+
+6. Check out unown# github and download the available Grafana Dashboards for easy import into your grafana instance
+
+_Koji Projects:_
 
 ![Koji Sample Projects](https://i.ibb.co/YhdSWCq/koji-projects.png)
 
-ReactMap Example:
+_ReactMap:_
 
 ![Reactmap Sample Area](https://i.ibb.co/b7BS6Ww/reactmap.png)
 
-Dragonite Example:
+_Dragonite:_
 
 ![Dragonite Sample](https://i.ibb.co/7SDmxrm/dragonite.png)
 
-Rotom Example:
+_Rotom:_
 
 ![Rotom Sample](https://i.ibb.co/6FPB2ry/rotom.png)
+
+_Grafana:_
+
+![Grafana Sample](https://i.ibb.co/qr1v3CP/grafana.png)
 
 # REMEMBER
 
