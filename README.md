@@ -85,15 +85,23 @@ In general terms, you will need to:
 5. Map away
 
 Koji Projects Example:
+
 ![Koji Sample Projects](https://i.ibb.co/YhdSWCq/koji-projects.png)
 
 ReactMap Example:
+
 ![Reactmap Sample Area](https://i.ibb.co/b7BS6Ww/reactmap.png)
+
+Dragonite Example:
+
+![Dragonite Sample](https://i.ibb.co/7SDmxrm/dragonite.png)
+
+Rotom Example:
+
+![Rotom Sample](https://i.ibb.co/6FPB2ry/rotom.png)
 
 # REMEMBER
 
 This setup **ISN'T** production ready. You really need to secure your install. Prefereably with a Reverse Proxy and close/protect your accesses.
-
-
 
 Debugging is a big part of the process, so don't be afraid to ask for help in our Discord server (https://discord.gg/pokemod)
