@@ -1,10 +1,8 @@
 version: "3.8"
 services:
-  # This docker-compose file is divided into sections. The basic necessary
-  # services are included and uncommented first, followed by optional and more
-  # advanced services that the user can choose to enable as he progresses
-
-  # Basic Section
+  # This docker-compose file is provided as an example to run most elementary services
+  # You can add more services as you need them. For example, if you want to run a reverse proxy
+  # you can add it here and point it to the services you want to expose to the internet
 
   # Main database to handle everything
   # Container default port is 3306 if you need to expose it (you shouldn't)
@@ -167,278 +165,55 @@ services:
     ports:
       - 6005:80
 
-  # # Reverse Proxy to manage everything related to domains
-  # # needs 80 and 443 exposed in production to handle all incoming traffic
-  # # can use 8443 or any other cloudflare approved port for testing
+  # VictoriaMetrics Agent to scrape data from all services and send them to victoria metrics
+  # default container port is 8429 but we don't need to expose it at all for a local setup
 
-  # swag:
-  #   image: lscr.io/linuxserver/swag
-  #   container_name: swag
-  #   restart: unless-stopped
-  #   cap_add:
-  #     - NET_ADMIN
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=Europe/London
-  #     - URL=yourdomain.com
-  #     - SUBDOMAINS=www,map,grafana,dragonite,rotom,koji,pma
-  #     - VALIDATION=dns
-  #     - CERTPROVIDER=zerossl
-  #     - DNSPLUGIN=cloudflare
-  #     - EMAIL=${ADMIN_EMAIL}
-  #     - ONLY_SUBDOMAINS=false
-  #     - STAGING=false
-  #     - DOCKER_MODS=linuxserver/mods:swag-dashboard|linuxserver/mods:swag-cloudflare-real-ip|linuxserver/mods:swag-auto-reload
-  #   volumes:
-  #     - type: bind
-  #       source: ./swag
-  #       target: /config
-  #     - type: bind
-  #       source: ./swag/fail2ban/fail2ban.sqlite3
-  #       target: /dashboard/fail2ban.sqlite3:ro
-  #   ports:
-  #     - 80:80 # Mandatory for external redirect to 443
-  #     - 443:443 # Public entrypoint
+  vmagent:
+    image: victoriametrics/vmagent
+    container_name: vmagent
+    restart: unless-stopped
+    working_dir: /vmagentdata
+    depends_on:
+      - victoriametrics
+    volumes:
+      - ./vmagent/data:/vmagentdata
+      - ./vmagent/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--promscrape.config=/etc/prometheus/prometheus.yml"
+      - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
 
-  # # DDClient to automatically update our dynamic IP on Cloudflare
+  # VictoriaMetrics package to store all statistical data that we collect and to be use as a source for Grafana
+  # default port is 8428 but we don't need to expose it.
 
-  # ddclient:
-  #   image: lscr.io/linuxserver/ddclient:latest
-  #   container_name: ddclient
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=Europe/London
-  #   volumes:
-  #     - ./ddclient:/config
-  #   restart: unless-stopped
+  victoriametrics:
+    image: victoriametrics/victoria-metrics
+    container_name: victoriametrics
+    restart: unless-stopped
+    depends_on:
+      - dragonite
+      - rotom
+      - golbat
+    volumes:
+      - ./victoriametrics/data:/storage
+    command:
+      - "--storageDataPath=/storage"
+      - "--httpListenAddr=:8428"
+      - "--maxLabelsPerTimeseries=30"
 
-  # # Authelia Service to provide a more secure authentication method
-  # # than just basic auth
+  # Grafana Package for beautiful stats
+  # Default port of the container is 3000. We will expose it through port 6006 but it should be removed if you use a reverse proxy
 
-  # authelia:
-  #   image: ghcr.io/authelia/authelia:latest
-  #   container_name: authelia
-  #   user: "1000:1000"
-  #   environment:
-  #     - TZ=Europe/Lisbon
-  #   volumes:
-  #     - type: bind
-  #       source: ./authelia
-  #       target: /config
-  #   restart: unless-stopped
-
-  # # VictoriaMetrics Agent to scrape data from all services
-  # # default container port is 8429
-
-  # vmagent:
-  #   image: victoriametrics/vmagent
-  #   container_name: vmagent
-  #   user: "1000:1000"
-  #   restart: unless-stopped
-  #   working_dir: /vmagentdata
-  #   depends_on:
-  #     - victoriametrics
-  #   volumes:
-  #     - ./vmagent/data:/vmagentdata
-  #     - ./vmagent/prometheus.yml:/etc/prometheus/prometheus.yml
-  #   command:
-  #     - "--promscrape.config=/etc/prometheus/prometheus.yml"
-  #     - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
-
-  # # VictoriaMetrics package
-  # # default port is 8428
-
-  # victoriametrics:
-  #   image: victoriametrics/victoria-metrics
-  #   container_name: victoriametrics
-  #   user: "1000:1000"
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - dragonite
-  #     - rotom
-  #     - golbat
-  #   volumes:
-  #     - ./victoriametrics/data:/storage
-  #   command:
-  #     - "--storageDataPath=/storage"
-  #     - "--httpListenAddr=:8428"
-  #     - "--maxLabelsPerTimeseries=30"
-
-  # # Grafana Package for beautiful stats
-  # # Default port of the container is 3000
-
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   user: "1000:1000"
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - victoriametrics
-  #   volumes:
-  #     - ./grafana:/var/lib/grafana
-  #     - /etc/localtime:/etc/localtime:ro
-  #   environment:
-  #     GF_RENDERING_SERVER_URL: http://grafana-renderer:8081/render
-  #     GF_RENDERING_CALLBACK_URL: http://grafana:3000/
-  #     GF_LOG_FILTERS: rendering:debug
-
-  # grafana-renderer:
-  #   image: grafana/grafana-image-renderer:latest
-  #   container_name: grafana-renderer
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - grafana
-
-  # # Poracle Notification System
-  # # Default container port 3030
-
-  # poracle:
-  #   image: ghcr.io/kartuludus/poraclejs:develop
-  #   container_name: poracle
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - database
-  #   environment:
-  #     PORACLE_SERVER_HOST: 0.0.0.0
-  #     PORACLE_SERVER_PORT: 3030
-  #     PORACLE_DB_TYPE: mysql
-  #     PORACLE_DB_HOST: database
-  #     PORACLE_DB_DATABASE: poracle
-  #     PORACLE_DB_USER: dbuser
-  #     PORACLE_DB_PASSWORD: ${MYSQL_PASSWORD}
-  #   volumes:
-  #     - ./poraclejs/config/:/usr/src/app/config/
-  #     - ./poraclejs/logs/:/usr/src/app/logs/
-  #     - ./poraclejs/cache/:/usr/src/app/.cache/
-
-  # # Tileserver to be used with poracle to generate map tiles of the pokemon/raid posts
-  # # Default container port 9999
-
-  # tileserver:
-  #   image: maptiler/tileserver-gl:latest
-  #   command: -p 9999
-  #   container_name: tileserver
-  #   user: "1000:1000"
-  #   restart: unless-stopped
-  #   tty: true
-  #   healthcheck:
-  #     disable: true
-  #   volumes:
-  #     - ./tileserver/data:/data
-
-  # # Tileserver cache
-  # # Default container port 9000
-
-  # tcache:
-  #   image: 0815flo/swifttileservercache:latest
-  #   container_name: tcache
-  #   user: "1000:1000"
-  #   restart: unless-stopped
-  #   tty: true
-  #   volumes:
-  #     - ./tileserver/cache:/SwiftTileserverCache/Cache
-  #     - ./tileserver/templates:/SwiftTileserverCache/Templates
-  #     - ./tileserver/markers:/SwiftTileserverCache/Markers
-  #     - ./tileserver/data:/SwiftTileserverCache/TileServer
-  #   environment:
-  #     TILE_SERVER_URL: http://tileserver:9999
-  #     TILE_CACHE_MAX_AGE_MINUTES: 1440 # 1 Day
-  #     TILE_CACHE_DELAY_SECONDS: 3600 # 1 Hour
-  #     STATIC_CACHE_MAX_AGE_MINUTES: 60 # 1440 # 1 Day
-  #     STATIC_CACHE_DELAY_SECONDS: 3600 # 1 Hour
-  #     STATIC_MUTLI_CACHE_MAX_AGE_MINUTES: 60 # 1 Hour
-  #     STATIC_MULTI_CACHE_DELAY_SECONDS: 900 # 15 Minutes
-  #     MARKER_CACHE_MAX_AGE_MINUTES: 1440 # 1 Day
-  #     MARKER_CACHE_DELAY_SECONDS: 3600 # 1 Hour
-  #     TEMPLATES_CACHE_DELAY_SECONDS: 60 # 1 Minute
-  #     MAX_BODY_SIZE: 2mb
-  #     PREVIEW_LATIDUDE: 61.45103083113621
-  #     PREVIEW_LONGITUDE: 23.856751630579232
-  #     ADMIN_USERNAME: admin
-  #     ADMIN_PASSWORD: ${TILESERVER_PASSWORD}
-
-  # rotomonitor:
-  #   container_name: rotomonitor
-  #   depends_on:
-  #     - rotom
-  #   build: ./rotomonitor
-  #   volumes:
-  #     - type: bind
-  #       source: ./rotomonitor/deviceDB.sqlite
-  #       target: /usr/src/app/deviceDB.sqlite
-  #     - type: bind
-  #       source: ./rotomonitor/RotomonitorConfig.json
-  #       target: /usr/src/app/RotomonitorConfig.json
-  #   restart: unless-stopped
-
-  # # Psyduck stack
-
-  # psyduck-redis:
-  #   image: redis:latest
-  #   restart: unless-stopped
-  #   container_name: psyduck-redis
-  #   command: /bin/sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
-
-  # psyduck-celery:
-  #   container_name: psyduck-celery
-  #   depends_on:
-  #     - database
-  #     - psyduck-redis
-  #   build:
-  #     context: ./psyduck
-  #     dockerfile: celery.Dockerfile
-  #   restart: unless-stopped
-
-  # psyduck-webhook:
-  #   container_name: psyduck-webhook
-  #   depends_on:
-  #     - psyduck-redis
-  #   build:
-  #     context: ./psyduck
-  #     dockerfile: webhook.Dockerfile
-  #   restart: unless-stopped
-
-  # API to provide parsed data
-  # Default container port 5001
-
-  # psyduck-api:
-  #   container_name: psyduck-api
-  #   depends_on:
-  #     - psyduck-redis
-  #   build:
-  #     context: ./psyduck
-  #     dockerfile: api.Dockerfile
-  #   restart: unless-stopped
-  #   ports:
-  #     - 5001:5001
-
-  # # Discord Bot to provide statistics
-
-  # chatot:
-  #   container_name: chatot
-  #   depends_on:
-  #     - psyduck-api
-  #   build:
-  #     context: ./chatot
-  #     dockerfile: Dockerfile
-
-  #   restart: unless-stopped
-
-  # Portainer to monitor and interact with docker
-  # Original port is 9000
-
-  # portainer:
-  #   image: portainer/portainer-ce
-  #   restart: unless-stopped
-  #   container_name: portainer
-  #   command: -H unix:///var/run/docker.sock
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - ./portainer:/data
-
-# Common Network for everything
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    depends_on:
+      - victoriametrics
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 6006:3000
 
 networks:
   mapping_network:

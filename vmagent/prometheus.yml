@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 30s # By default, scrape targets every 30 seconds.
+
+  external_labels:
+    monitor: "victoriametrics-monitor"
+
+# Scrape configurations
+
+scrape_configs:
+  - job_name: "unown_stack"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["golbat:9001"]
+        labels:
+          instance: "golbat"
+
+      - targets: ["rotom:7072"]
+        labels:
+          instance: "rotom"
+
+      - targets: ["dragonite:7272"]
+        labels:
+          instance: "dragonite"
