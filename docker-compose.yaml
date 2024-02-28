@@ -7,7 +7,9 @@ services:
   # Main database to handle everything
   # Container default port is 3306 if you need to expose it (you shouldn't)
   # environment section is only needed on first ever start. After that it can
-  # be safely removed as the database already exists
+  # be safely removed as the database already exists. Same applies to the first
+  # entry in the volumes section. It is only needed on first ever start to create the databases and
+  # grant the default user access to them.
 
   database:
     image: mariadb:latest
@@ -54,12 +56,8 @@ services:
     depends_on:
       - golbat
     volumes:
-      - type: bind
-        source: ./unown/dragonite_config.toml
-        target: /dragonite/config.toml
-      - type: bind
-        source: ./unown/logs
-        target: /dragonite/logs
+      - ./unown/dragonite_config.toml:/dragonite/config.toml
+      - ./unown/logs:/dragonite/logs
 
   # Dragonite Admin UX
   # Default container port is 7273 which can be exposed to 6002 (or not if
@@ -105,7 +103,7 @@ services:
         target: /golbat/logs
 
   # Rotom Device Manager
-  # Default container ports 7070,7071,7072. We will only expose
+  # Default container ports are 7070,7071,7072. We will only expose
   # 7070 so aegis devices can connect to it and 7072 (port 6003) for the web interface if
   # you want to access it directly. If you use a reverse proxy you can remove
   # the second port.
@@ -115,21 +113,15 @@ services:
     container_name: rotom
     restart: unless-stopped
     volumes:
-      - type: bind
-        source: ./unown/rotom_config.json
-        target: /rotom/config/local.json
-      - type: bind
-        source: ./unown/logs
-        target: /rotom/logs
-      - type: bind
-        source: ./unown/rotom_jobs
-        target: /rotom/jobs
+      - ./unown/rotom_config.json:/rotom/config/local.json
+      - ./unown/logs:/rotom/logs
+      - ./unown/rotom_jobs:/rotom/jobs
     ports:
       - 7070:7070
       - 6003:7072
 
   # Koji Geofence and Map Management service
-  # Default container port 8080. As above services, remove ports if you will
+  # Default container port 8080. As above services, remove the port section if you will
   # use a reverse proxy. Exposed port is 6004
 
   koji:
@@ -150,7 +142,7 @@ services:
   # PhpMyAdmin to access all our databases through a web interface
   # Default container port is 80. By default we expose it to 6005
   # however, if you use a reverse proxy and want external access, you
-  # can remove the ports section give access to the internet through
+  # can remove the ports section to give access to the internet through
   # the reverse proxy
 
   pma:
@@ -182,7 +174,7 @@ services:
       - "--promscrape.config=/etc/prometheus/prometheus.yml"
       - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
 
-  # VictoriaMetrics package to store all statistical data that we collect and to be use as a source for Grafana
+  # VictoriaMetrics package to store all statistical data that we collect and to be used as a source for Grafana
   # default port is 8428 but we don't need to expose it.
 
   victoriametrics:
@@ -202,6 +194,7 @@ services:
 
   # Grafana Package for beautiful stats
   # Default port of the container is 3000. We will expose it through port 6006 but it should be removed if you use a reverse proxy
+  # The default user and password are admin/admin. You should change them as soon as you log in.
 
   grafana:
     image: grafana/grafana:latest
