@@ -17,8 +17,8 @@
     "general": {
       "title": "Pokemod's PoGo Map",
       "headerTitle": "Pokemod's PoGo Map",
-      "startLat": 37.02021,
-      "startLon": -7.929963,
+      "startLat": 37.7894,
+      "startLon": -122.4016,
       "startZoom": 12,
       "minZoom": 6,
       "maxZoom": 18,
