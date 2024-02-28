@@ -106,7 +106,7 @@
   },
   "scanner": {
     "backendConfig": {
-      "platform": "custom",
+      "platform": "dragonite",
       "apiEndpoint": "http://dragonite:7272/scout"
     },
     "scanZone": {
