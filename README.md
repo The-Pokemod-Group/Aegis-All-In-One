@@ -51,6 +51,12 @@ You can run everything with the default passwords but obviously, it's not recomm
 sudo docker-compose up -d --force-recreate --build
 ```
 
+If you get an error in form of `The "UID" variable is not set. Defaulting to a blank string.` it means your shell isn't exporting the UID/GUID variables. You can overcome this by starting the stack with:
+
+```
+sudo UID=${UID} GID=${GID} docker-compose up -d --force-recreate --build
+```
+
 You should check each running container for errors after first start in the form of:
 
 ```
