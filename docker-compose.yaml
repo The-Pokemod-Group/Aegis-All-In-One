@@ -48,9 +48,12 @@ services:
   # Dragonite Scanner
   # Default container port is 7272 which is not exposed. It is only used
   # internally by other containers
+  # If you want to run a testing version of Dragonite, you can change the image to be
+  # used by comenting the current one and uncommenting the testing one
 
   dragonite:
     image: ghcr.io/unownhash/dragonite-public:latest
+    #image: ghcr.io/unownhash/dragonite-public:testing
     container_name: dragonite
     restart: unless-stopped
     depends_on:
@@ -103,7 +106,8 @@ services:
   # the second port.
   # There are two docker images available. The default one is the official Rotom from unown#
   # The second one is a custom version of Rotom that includes agent version display in the web interface
-  # which is useful to check if the agent is up to date whenever there's a server-sided update
+  # which is useful to check if the agent is up to date on each individual device whenever there's a server-sided update
+  # To use the custom version, comment the current image and uncomment the second one
 
   rotom:
     image: ghcr.io/unownhash/rotom:main
