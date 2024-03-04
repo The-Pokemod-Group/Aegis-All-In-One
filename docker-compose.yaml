@@ -48,8 +48,6 @@ services:
   # Dragonite Scanner
   # Default container port is 7272 which is not exposed. It is only used
   # internally by other containers
-  # If you want to run a testing version of Dragonite, you can change the image to be
-  # used by comenting the current one and uncommenting the testing one
 
   dragonite:
     image: ghcr.io/unownhash/dragonite-public:latest
@@ -104,14 +102,10 @@ services:
   # 7070 so aegis devices can connect to it and 7072 (port 6003) for the web interface if
   # you want to access it directly. If you use a reverse proxy you can remove
   # the second port.
-  # There are two docker images available. The default one is the official Rotom from unown#
-  # The second one is a custom version of Rotom that includes agent version display in the web interface
-  # which is useful to check if the agent is up to date on each individual device whenever there's a server-sided update
-  # To use the custom version, comment the current image and uncomment the second one
 
   rotom:
     image: ghcr.io/unownhash/rotom:main
-    #image: docker.io/tchavei/rotom:latest
+    #image: ghcr.io/the-pokemod-group/rotom:main
     container_name: rotom
     restart: unless-stopped
     volumes:
