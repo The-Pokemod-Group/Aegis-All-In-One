@@ -92,24 +92,22 @@ services:
     depends_on:
       - database
     volumes:
-      - type: bind
-        source: ./unown/golbat_config.toml
-        target: /golbat/config.toml
-      - type: bind
-        source: ./unown/golbat_cache
-        target: /golbat/cache
-      - type: bind
-        source: ./unown/logs
-        target: /golbat/logs
+      - ./unown/golbat_config.toml:/golbat/config.toml
+      - ./unown/golbat_cache:/golbat/cache
+      - ./unown/logs:/golbat/logs
 
   # Rotom Device Manager
   # Default container ports are 7070,7071,7072. We will only expose
   # 7070 so aegis devices can connect to it and 7072 (port 6003) for the web interface if
   # you want to access it directly. If you use a reverse proxy you can remove
   # the second port.
+  # There are two docker images available. The default one is the official Rotom from unown#
+  # The second one is a custom version of Rotom that includes agent version display in the web interface
+  # which is useful to check if the agent is up to date whenever there's a server-sided update
 
   rotom:
     image: ghcr.io/unownhash/rotom:main
+    #image: docker.io/tchavei/rotom:latest
     container_name: rotom
     restart: unless-stopped
     volumes:

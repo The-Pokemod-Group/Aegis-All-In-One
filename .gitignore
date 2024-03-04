@@ -1,1 +1,5 @@
 .env
+reactmap/local.json
+unown/dragonite_config.toml
+unown/golbat_config.toml
+unown/rotom_config.json
