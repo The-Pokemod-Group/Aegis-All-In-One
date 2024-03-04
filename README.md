@@ -49,7 +49,7 @@ If you do, pay special attention to the secrets inside the .env file and make su
 
 You can run everything with the default passwords but obviously, it's not recommended.
 
-Finally, before starting the stack, you should go through the `docker-compose.yml` and adjust things to your liking. For example, you might want to change the ports that the services are exposed on, or use the alternate images that are available for some of the services.
+Finally, before starting the stack, you should go through the `docker-compose.yml` and adjust things to your liking. For example, you might want to change the ports that the services are exposed on.
 
 ### 4. Start the stack
 
