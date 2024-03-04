@@ -24,6 +24,6 @@
     "minMemory": 30000,
     "maxMemStartMultiple": 2,
     "maxMemStartMultipleOverwrite": {},
-    "deviceCooldown": 12
+    "deviceCooldown": 0
   }
 }
