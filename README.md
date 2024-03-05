@@ -54,20 +54,23 @@ Finally, before starting the stack, you should go through the `docker-compose.ym
 ### 4. Start the stack
 
 ```
-sudo docker-compose up -d --force-recreate --build
+docker-compose up -d --force-recreate --build
 ```
+(*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
 
 If you get an error in form of `The "UID" variable is not set. Defaulting to a blank string.` it means your shell isn't exporting the UID/GUID variables. You can overcome this by starting the stack with:
 
 ```
-sudo UID=${UID} GID=${GID} docker-compose up -d --force-recreate --build
+UID=${UID} GID=${GID} docker-compose up -d --force-recreate --build
 ```
+(*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
 
 You should check each running container for errors after first start in the form of:
 
 ```
-sudo docker logs <name_of_container>
+docker logs <name_of_container>
 ```
+(*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
 
 It's normal that after the first start some errors appear as, for example, Koji needs to have
 at least one project for dragonite/reactmap to pull the areas from but overall, all containers should boot up normally.
