@@ -103,7 +103,7 @@ Anything regarding Aegis, feel free to ask about in our Discord server (https://
 
 In general terms, you will need to:
 
-1. Add accounts to Dragonite (lots of them! Someone from the unown# team mentioned something as much as 600 accounts per worker for smooth operation if using `recycle_on_jail=true`)
+1. Add accounts to Dragonite (lots of them! Account usage depends on each setup and use case including active options like `recycle_on_jail=true` but to be safe, consider at least 100 per worker x `minimum_account_reuse_hours` / 24)
 2. Add at least one project with areas in Koji (check the image below for an example of a full running setup)
 3. Sync the project with Dragonite and Reactmap
 4. Add at least one Aegis Device (should be autodetected by Rotom once you configure the ATV and Aegis properly)
