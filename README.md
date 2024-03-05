@@ -85,7 +85,7 @@ Point your browser to the following addresses. replace localhost with your serve
 
 ### 6. Working with Grafana
 
-Albeit not critical to normal operation, it's always nice and informative to have some kind of performance metrics of your setup. In order to get a glimpse of what you can get with it, you should import our custom example dashboard that's inside the grafana folder.
+Albeit not critical to normal operation, it's always nice and informative to have some kind of performance metrics of your setup. In order to get a glimpse of what you can get with it, you should import our custom example dashboard that's inside the grafana folder (based on Dragonite's default prometheus dashboard but with some other metrics).
 
 1.  point your browser to http://localhost:6006
 2.  login with the default admin/admin credentials (for God sake, change them once you've logged in)
