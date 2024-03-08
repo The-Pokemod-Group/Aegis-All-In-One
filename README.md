@@ -8,7 +8,7 @@ For people rather interested in Atlas (https://www.pokemod.dev) and RDM (https:/
 
 ## Disclaimer
 
-This repository is meant to be used as a **PROOF OF CONCEPT** meaning that it's not meant to be used in a production environment. It's meant to be used as a learning tool and to help you understand how the different services interact with each other.
+This repository is meant to be used as a **PROOF OF CONCEPT** meaning that it's not meant to be used in a production environment unless you secure it properly. It's meant to be used as a learning tool and to help you understand how the different services interact with each other.
 
 # WARNING WARNING WARNING
 
