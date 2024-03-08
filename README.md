@@ -58,12 +58,14 @@ docker-compose up -d --force-recreate --build
 ```
 (*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
 
-If you get an error in form of `The "UID" variable is not set. Defaulting to a blank string.` it means your shell isn't exporting the UID/GUID variables. You can overcome this by starting the stack with:
+If you get an error in form of `The "UID" variable is not set. Defaulting to a blank string.` it means your shell isn't exporting the UID/GUID variables that are needed for grafana. You can overcome this by starting the stack with:
 
 ```
 UID=${UID} GID=${GID} docker-compose up -d --force-recreate --build
 ```
 (*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
+
+Another option would be to comment out the grafana section if you don't need it.
 
 You should check each running container for errors after first start in the form of:
 
