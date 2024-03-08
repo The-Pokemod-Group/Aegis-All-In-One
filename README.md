@@ -12,7 +12,7 @@ This repository is meant to be used as a **PROOF OF CONCEPT** meaning that it's 
 
 # WARNING WARNING WARNING
 
-This is an **INSECURE** install. If you run this on an internet exposed server, you can easily be hacked as many services don't have embedded authentication. Some of the services will leak personal information even while using the default embedded auth (Dragonite Admin, Koji, etc) so consider yourself **WARNED**.
+This is an **INSECURE** install. If you run this on an internet exposed server, you can easily be hacked as many services don't have embedded authentication. Some of the services will leak personal information even while using the default embedded auth (specially Dragonite Admin, Koji and Rotom) so consider yourself **WARNED**.
 
 Ideally, you **SHOULD** use a reverse proxy and, at the minimum, place basic auth for your exposed services. If you run a reverse proxy like **SWAG** (https://docs.linuxserver.io/general/swag/) you should opt to run **Authelia** to assure further security and privacy all around. In a production environment with remote ATV devices, you only want to have ports 80, 443 and 7070 (protected by authbearer) exposed. With a local server and devices, you shouldn't expose port 7070 to the outside world.
 
