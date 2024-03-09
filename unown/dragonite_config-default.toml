@@ -29,7 +29,7 @@ minimum_account_reuse_hours = 168
 endpoint = "ws://rotom:7071"
 
 [logging]
-save = true
+save = false
 #debug = false
 #max_size = 500 # MB
 #max_age = 30 # days
