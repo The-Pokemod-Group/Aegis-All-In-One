@@ -16,6 +16,36 @@ This is an **INSECURE** install. If you run this on an internet exposed server, 
 
 Ideally, you **SHOULD** use a reverse proxy and, at the minimum, place basic auth for your exposed services. If you run a reverse proxy like **SWAG** (https://docs.linuxserver.io/general/swag/) you should opt to run **Authelia** to assure further security and privacy all around. In a production environment with remote ATV devices, you only want to have ports 80, 443 and 7070 (protected by authbearer) exposed. With a local server and devices, you shouldn't expose port 7070 to the outside world.
 
+## Pre-installation
+
+Make sure you have a Linux environment available. Albeit it is possible to run Docker under Windows, this AIO hasn't been tested in that environment so no support can be provided.
+
+Regarding Docker configurations, due to the massive logs size that can accumulate over time, it is strongly recommended that you configure your Docker service to limit and rotate logs. You can achieve this by creating or editing the daemon.json file in your system:
+
+```
+sudo nano /etc/docker/daemon.json
+```
+
+and placing inside:
+
+```
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m",
+    "max-file": "3"
+  }
+}
+```
+
+This will limit the logs to a total of 300Mbytes and rotate them every 100Mbytes.
+
+Don't forget to restart the docker service once you've edited/create the file above with
+
+```
+sudo systemctl restart docker
+```
+
 ## Installation
 
 ### 1. Clone the repository
@@ -56,14 +86,16 @@ Finally, before starting the stack, you should go through the `docker-compose.ym
 ```
 docker-compose up -d --force-recreate --build
 ```
-(*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
+
+(\*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
 
 If you get an error in form of `The "UID" variable is not set. Defaulting to a blank string.` it means your shell isn't exporting the UID/GUID variables that are needed for grafana. You can overcome this by starting the stack with:
 
 ```
 UID=${UID} GID=${GID} docker-compose up -d --force-recreate --build
 ```
-(*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
+
+(\*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
 
 Another option would be to comment out the grafana section if you don't need it.
 
@@ -72,7 +104,8 @@ You should check each running container for errors after first start in the form
 ```
 docker logs <name_of_container>
 ```
-(*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
+
+(\*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
 
 It's normal that after the first start some errors appear as, for example, Koji needs to have
 at least one project for dragonite/reactmap to pull the areas from but overall, all containers should boot up normally.
@@ -87,6 +120,10 @@ Point your browser to the following addresses. replace localhost with your serve
 - http://localhost:6004 (Koji UX)
 - http://localhost:6005 (PhpMyAdmin)
 - http://localhost:6006 (Grafana UX)
+
+#### Special note
+
+On some occasions one or more of these ports may already be assigned to other services which largely depends on each specific machine. If you're presented with a **_"port already in use"_** error, please change the corresponding container port in the `docker-compose.yaml` file.
 
 ### 6. Working with Grafana
 
