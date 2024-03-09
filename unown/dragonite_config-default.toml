@@ -17,13 +17,13 @@ bearer_token = "SuperSecureKojiSecret"
 enabled = true
 
 [tuning]
-dynamic_route_split = true
 #recycle_gmo_limit = 4900
 #recycle_encounter_limit = 9900
 recycle_on_jail=false
 minimum_account_reuse_hours = 168
 #location_delay = 0
 #fort_location_delay = 0
+#scout_age_limit = 30
 
 [rotom]
 endpoint = "ws://rotom:7071"
