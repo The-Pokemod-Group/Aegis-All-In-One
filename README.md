@@ -151,6 +151,25 @@ In general terms, you will need to:
 4. Add at least one Aegis Device (should be autodetected by Rotom once you configure the ATV and Aegis properly)
 5. Map away
 
+### 8. Aegis config
+
+This is typically unnecessary, because filling in the details in the app is usually sufficient.
+
+The configuration file for Aegis is placed in /data/local/tmp/aegis_config.json, and the same goes for the logs at /data/local/tmp/aegis.log.
+
+As for the configuration file, here is an example:
+
+```
+{
+    "authBearer": "bearer_for_rotom",
+    "deviceAuthToken": "your_unique_auth_token_from_aegis_portal",
+    "deviceName": "your_device_name",
+    "email": "your_email_from_aegis_portal",
+    "rotomUrl": "ip:port",
+    "runOnBoot": true
+}
+```
+
 _Koji Projects:_
 
 ![Koji Sample Projects](https://i.ibb.co/YhdSWCq/koji-projects.png)
