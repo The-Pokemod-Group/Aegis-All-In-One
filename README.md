@@ -63,6 +63,7 @@ cp reactmap/local-default.json reactmap/local.json
 cp unown/dragonite_config-default.toml unown/dragonite_config.toml
 cp unown/golbat_config-default.toml unown/golbat_config.toml
 cp unown/rotom_config-default.json unown/rotom_config.json
+cp unown/swirlix_config-default.toml unown/swirlix_config.toml
 ```
 
 ### 3. Edit the configuration files
@@ -78,6 +79,13 @@ If you do, pay special attention to the secrets inside the .env file and make su
 - unown/rotom_config.json (AuthBearer for Aegis Devices)
 
 You can run everything with the default passwords but obviously, it's not recommended.
+
+After recent Pokemon-Trainer-Club (PTC) changes, you are required to use some sort of login proxy to bypass the Anti-Bot protection placed.
+The Unown# team has introduced two new tools for that; Swirlix and Xilriws. At the time of this being written only Swirlix is very stable but it requires you to buy credits in a monthly basis to use for your API requests.
+Please refer to the Swirlix GitHub Repository (https://github.com/UnownHash/Swirlix-Public) to understand more.
+After you have registered to Scrappey you need to enter your API Key (located in the Scrappey Dashboard) to your:
+
+- unown/swirlix_config.toml
 
 Finally, before starting the stack, you should go through the `docker-compose.yml` and adjust things to your liking. For example, you might want to change the ports that the services are exposed on.
 
