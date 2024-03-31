@@ -81,7 +81,7 @@ If you do, pay special attention to the secrets inside the .env file and make su
 
 You can run everything with the default passwords but obviously, it's not recommended.
 
-After recent Pokemon-Trainer-Club (PTC) changes, you are required to use some sort of login proxy to bypass the Impeva Anti-Bot protection placed on PTC login.
+After recent Pokemon-Trainer-Club (PTC) changes, you are required to use some sort of login proxy to bypass the Imperva Anti-Bot protection placed on PTC login.
 The Unown# team has introduced two new tools for that; Swirlix and Xilriws. At the time of this being written Swirlix is not working for everyone, therefore we are using Xilriws!
 Please refer to the Xilriws GitHub Repository (https://github.com/UnownHash/Xilriws-Public) to understand more.
 If you are planning to use many workers you SHOULD change `replicas` value under `xilriws-worker` service on:
