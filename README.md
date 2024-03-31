@@ -19,7 +19,7 @@ Ideally, you **SHOULD** use a reverse proxy and, at the minimum, place basic aut
 ## Pre-installation
 
 Make sure you have a Linux environment available. Albeit it is possible to run Docker under Windows, this AIO hasn't been tested in that environment so no support can be provided.
-
+Moreover, you will need to have Docker Engine and Docker Compose plugin updated to a recent version in order for services used in this AIO repository to work correctly!!!
 Regarding Docker configurations, due to the massive logs size that can accumulate over time, it is strongly recommended that you configure your Docker service to limit and rotate logs. You can achieve this by creating or editing the daemon.json file in your system:
 
 ```
@@ -63,7 +63,6 @@ cp reactmap/local-default.json reactmap/local.json
 cp unown/dragonite_config-default.toml unown/dragonite_config.toml
 cp unown/golbat_config-default.toml unown/golbat_config.toml
 cp unown/rotom_config-default.json unown/rotom_config.json
-cp unown/swirlix_config-default.toml unown/swirlix_config.toml
 ```
 
 ### 3. Edit the configuration files
@@ -80,19 +79,19 @@ If you do, pay special attention to the secrets inside the .env file and make su
 
 You can run everything with the default passwords but obviously, it's not recommended.
 
-After recent Pokemon-Trainer-Club (PTC) changes, you are required to use some sort of login proxy to bypass the Anti-Bot protection placed.
-The Unown# team has introduced two new tools for that; Swirlix and Xilriws. At the time of this being written only Swirlix is very stable but it requires you to buy credits in a monthly basis to use for your API requests.
-Please refer to the Swirlix GitHub Repository (https://github.com/UnownHash/Swirlix-Public) to understand more.
-After you have registered to Scrappey you need to enter your API Key (located in the Scrappey Dashboard) to your:
-
-- unown/swirlix_config.toml
+After recent Pokemon-Trainer-Club (PTC) changes, you are required to use some sort of login proxy to bypass the Impeva Anti-Bot protection placed on PTC login.
+The Unown# team has introduced two new tools for that; Swirlix and Xilriws. At the time of this being written Swirlix is not working for everyone, therefore we are using Xilriws!
+Please refer to the Xilriws GitHub Repository (https://github.com/UnownHash/Xilriws-Public) to understand more.
+If you are planning to use many workers you SHOULD change `replicas` value under `xilriws-worker` service on:
+- docker-compose.yml
+to some higher value. KEEP IN MIND, the higher the number, the more resources (CPU-RAM) required. If you have no refresh tokens you will require more PTC logins and this more replicas!
 
 Finally, before starting the stack, you should go through the `docker-compose.yml` and adjust things to your liking. For example, you might want to change the ports that the services are exposed on.
 
 ### 4. Start the stack
 
 ```
-docker-compose up -d --force-recreate --build
+docker compose up -d --force-recreate --build
 ```
 
 (\*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
@@ -100,7 +99,7 @@ docker-compose up -d --force-recreate --build
 If you get an error in form of `The "UID" variable is not set. Defaulting to a blank string.` it means your shell isn't exporting the UID/GUID variables that are needed for grafana. You can overcome this by starting the stack with:
 
 ```
-UID=${UID} GID=${GID} docker-compose up -d --force-recreate --build
+UID=${UID} GID=${GID} docker compose up -d --force-recreate --build
 ```
 
 (\*) You might need to run the above command with sudo if your local user doesn't have permissions over the docker service
