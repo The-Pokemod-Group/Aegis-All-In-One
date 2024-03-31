@@ -10,7 +10,7 @@ api_host = "0.0.0.0"
 api_port = 7272
 
 # Uses login proxy as you wish, e.g. Swirlix or Xilriws
-# remote_auth_url = "http://127.0.0.1:7372/api/v1/login-code"
+# remote_auth_url = "http://xilriws:5090/api/v1/login-code"
 
 [koji]
 url = "http://koji:8080"
