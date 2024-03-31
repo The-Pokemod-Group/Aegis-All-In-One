@@ -19,7 +19,9 @@ Ideally, you **SHOULD** use a reverse proxy and, at the minimum, place basic aut
 ## Pre-installation
 
 Make sure you have a Linux environment available. Albeit it is possible to run Docker under Windows, this AIO hasn't been tested in that environment so no support can be provided.
+
 Moreover, you will need to have Docker Engine and Docker Compose plugin updated to a recent version in order for services used in this AIO repository to work correctly!!!
+
 Regarding Docker configurations, due to the massive logs size that can accumulate over time, it is strongly recommended that you configure your Docker service to limit and rotate logs. You can achieve this by creating or editing the daemon.json file in your system:
 
 ```
