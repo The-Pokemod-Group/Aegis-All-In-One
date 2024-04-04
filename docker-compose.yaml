@@ -206,7 +206,7 @@ services:
 
   # Xilriws Anti-Bot Bypass by the Unown Team.
   # This Requires you enable `remote_auth_url` under [general] section in your `dragonite_config.toml`.
-  reverse-proxy:
+  xilriws-load-balancer:
     image: traefik:v2.11
     container_name: xilriws
     command: --api.insecure=true --providers.docker --providers.docker.exposedbydefault=false --entrypoints.def.address=:5090
