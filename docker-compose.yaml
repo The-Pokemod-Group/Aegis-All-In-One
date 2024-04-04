@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   # This docker-compose file is provided as an example to run most elementary services
   # You can add more services as you need them. For example, if you want to run a reverse proxy
