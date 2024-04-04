@@ -219,12 +219,12 @@ services:
     image: ghcr.io/unownhash/xilriws-public:main
     restart: unless-stopped
     expose:
-    - "5090"
+      - "5090"
     labels:
       - traefik.http.routers.xilriws.rule=HostRegexp(`{catchall:.*}`)
       - traefik.enable=true
     deploy:
-    # You will need to increase this if you just starting using Unown stack and dragonite and have no refresh tokens. Read readme.
+      # You will need to increase this if you just starting using Unown stack and dragonite and have no refresh tokens. Read readme.
       replicas: 1
 
 networks:
