@@ -88,6 +88,12 @@ If you are planning to use many workers you SHOULD change `replicas` value under
 - docker-compose.yml
 
 to some higher value. KEEP IN MIND, the higher the number, the more resources (CPU-RAM) required. If you have no refresh tokens you will require more PTC logins and this more replicas!
+As of April 2024 you need proxies again to make password AUTHs to PTC. Therefore you should buy private proxies (This is something you should research yourself. Asking for proxy providors is not a good idea since most proxies are SHARED and you don't want to be using same proxies for PTC as other map users out there).
+Once you got your proxies, fill:
+
+- unown/proxies.txt
+
+with the format that is provided in the comments in `proxies.txt` (remove the comments afterwards)
 
 Finally, before starting the stack, you should go through the `docker-compose.yml` and adjust things to your liking. For example, you might want to change the ports that the services are exposed on.
 
