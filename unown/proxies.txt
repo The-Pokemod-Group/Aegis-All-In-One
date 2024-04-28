@@ -1,0 +1,2 @@
+### Each line should have one proxy url. (i.e. ip:port or http://user:pass@ip:port)
+### DELETE THESE LINES AFTER YOU ADD YOUR PROXIES
