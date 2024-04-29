@@ -1,6 +1,8 @@
 [general]
-login_delay = 0 
 # seconds to sleep in-between PTC authing on one proxy
+login_delay = 0 
+# Ηave dragonite scroll through accounts which don't have a refresh token and fetch these in the background.
+# token_init_enabled = true
 
 # Whether raw worker stats are written
 stats = true
@@ -27,11 +29,18 @@ minimum_account_reuse_hours = 168
 #location_delay = 0
 #fort_location_delay = 0
 #scout_age_limit = 30
+#token_refresh_only=true # INSANELY useful setting which will make dragonite work 100% only with refresh tokens instead of trying password PTC AUTHs! 
+# This is adviced when Imperva config is changed and xil (or any other proxy doesn't work)
+
+#[accounts]
+#required_level = 30 # used for everything except leveling (quest can force level 31 at specific events)
+#leveling_level = 31 # used to stop leveling at certain level
 
 [rotom]
 endpoint = "ws://rotom:7071"
 
 [logging]
+# if you are going to run Blissey for stats you are going to need these true.
 save = false
 #debug = false
 #max_size = 500 # MB
