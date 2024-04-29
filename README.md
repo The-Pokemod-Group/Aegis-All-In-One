@@ -93,7 +93,9 @@ Once you got your proxies, fill:
 
 - unown/proxies.txt
 
-with the format that is provided in the comments in `proxies.txt` (remove the comments afterwards)
+with the format that is provided in the comments in `proxies.txt` (remove the comments afterwards).
+It should be noted that these proxies are ONLY being used for the password AUTHs xilriws is executing and are NOT proxying Dragonite traffic itself!
+If in the future there is game data limits OR refresh token limits as well you will need to add proxies through Dragonite Admin UX to proxy those as well as the current `proxies.txt` only "conceals" Xilriws!!!
 
 Finally, before starting the stack, you should go through the `docker-compose.yml` and adjust things to your liking. For example, you might want to change the ports that the services are exposed on.
 
