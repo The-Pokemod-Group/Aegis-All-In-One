@@ -218,7 +218,9 @@ services:
     image: ghcr.io/unownhash/xilriws-public:main
     restart: unless-stopped
     expose:
-      - "5090"
+    - "5090"
+    volumes:
+      - ./unown/proxies.txt:/xilriws/proxies.txt
     labels:
       - traefik.http.routers.xilriws.rule=HostRegexp(`{catchall:.*}`)
       - traefik.enable=true
