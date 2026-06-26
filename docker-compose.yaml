@@ -215,7 +215,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   xilriws-worker:
-    image: ghcr.io/unownhash/xilriws-public:main
+    image: ghcr.io/unownhash/xilriws:main
     restart: unless-stopped
     expose:
     - "5090"
